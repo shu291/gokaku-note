@@ -322,6 +322,14 @@ tr.hl td{background:var(--accent-soft)}
 .sb b{text-align:right}
 .warnbox{background:var(--warn-soft);color:var(--ink);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);border-radius:12px;padding:12px 14px;font-size:13.5px;line-height:1.6}
 .warnbox code{font-family:var(--mono);font-size:12px;background:var(--surface);padding:1px 5px;border-radius:4px}
+.menu{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.menu summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--accent)}
+.menu-body{white-space:pre-wrap;font-family:var(--sans);font-size:13px;line-height:1.7;background:var(--sunk);border-radius:10px;padding:10px 12px;margin:8px 0 0;color:var(--ink)}
+.menu-body.night{opacity:.85}
+.tk{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:13px}
+.tk li{display:flex;gap:6px;align-items:baseline}
+.tk li.done{color:var(--ink3);text-decoration:line-through}
+.sb small{font-size:11px;font-weight:500}
 @media (prefers-reduced-motion:no-preference){.bar i{transition:width .6s ease}}
 </style>
 
@@ -347,6 +355,7 @@ tr.hl td{background:var(--accent-soft)}
     <div class="hero" id="countdown"></div>
     <div class="card"><div class="row-head"><h2 id="todayTitle">今日</h2><span class="sub" id="todaySub"></span></div>
       <div class="today-books" id="todayBooks"></div>
+      <div id="todayMenu"></div>
       <h3 style="margin-top:14px">これからの7日</h3>
       <div class="strip" id="strip"></div>
     </div>
@@ -395,6 +404,7 @@ tr.hl td{background:var(--accent-soft)}
       <div class="card"><div class="row-head"><h2>毎日の記録</h2><span class="legend"><span><span class="sw hm-sw lvnone"></span>記録なし</span><span><span class="sw hm-sw lv1"></span>〜半分</span><span><span class="sw hm-sw lv2"></span>半分〜</span><span><span class="sw hm-sw lv3"></span>最低ライン〜</span><span><span class="sw hm-sw lv4"></span>予定どおり</span></span></div><div class="heat" id="heat"></div></div>
     </div>
     <div class="card"><h2>教科別の記録</h2><div id="realSubj" style="margin-top:10px;display:flex;flex-direction:column;gap:8px"></div></div>
+    <div class="card" id="mistakeCard" hidden><div class="row-head"><h2>数学 間違いノート</h2><span class="sub" id="mkSum"></span></div><div id="mkUnits" style="display:flex;flex-direction:column;gap:8px;margin-top:10px"></div><div class="ms" id="mkList" style="margin-top:10px"></div></div>
     <div class="card chart"><div class="row-head"><h2>模試の偏差値</h2><span class="legend"><span><span class="sw ln" style="--k:var(--en)"></span>英語</span><span><span class="sw ln" style="--k:var(--ma)"></span>数学</span><span><span class="sw" style="background:var(--accent-soft)"></span>早慶ボーダー</span></span></div><div id="mockChart" class="ck-host"></div><div class="ms" id="mockList" style="margin-top:6px"></div></div>
     <p class="sub">記録はStudyplusとLINEの報告（data/logs/daily）から。押し忘れた日は「記録なし」になり、0時間とはみなしません。学校の授業中の勉強は入らないことがあります。</p>
   </section>
@@ -787,6 +797,13 @@ const CALM = Object.fromEntries(CAL.map(c => [c.date, c]));
 const booksOn = s => road.filter(r => r.start <= s && s <= r.end);
 const msOn = s => MS.filter(m => m.date === s);
 const hh = m => (m/60).toFixed(m%60?1:0);
+function menuHTML(s){
+  const X = D.derived || {}; const dr = (X.drafts || {})[s]; const tk = (X.tasks || {})[s];
+  let h = '';
+  if (dr && dr.body) h += `<details class="menu" ${s===todayIso?'open':''}><summary>この日のメニュー（16:00のLINE）</summary><pre class="menu-body">${esc(dr.body)}</pre>${dr.night?`<pre class="menu-body night">${esc(dr.night)}</pre>`:''}</details>`;
+  if (tk && tk.total) h += `<div class="menu"><div class="row-head"><h3>Notionのタスク</h3><span class="sub">${tk.done}/${tk.total} 完了</span></div><ul class="tk">${tk.items.map(i=>`<li class="${/^(完了|済|done)/i.test(i.st)?'done':''}"><span class="kind">${esc(i.st||'—')}</span>${i.s?esc(i.s)+'：':''}${esc(i.t)}</li>`).join('')}</ul></div>`;
+  return h;
+}
 function dayDetailHTML(s){
   const c = CALM[s]; const ms = msOn(s); const bs = booksOn(s);
   const starts = road.filter(r => r.start === s), ends = road.filter(r => r.end === s);
@@ -794,6 +811,7 @@ function dayDetailHTML(s){
   if (ms.length) h += `<div class="ms" style="margin-top:6px">${ms.map(msRow).join('')}</div>`;
   if (starts.length || ends.length) h += `<p class="sub" style="margin:8px 0 0">${starts.map(r=>`<span class="tag st">開始</span> ${esc(r.book)}`).join('　')}${starts.length&&ends.length?'　':''}${ends.map(r=>`<span class="tag en">完了予定</span> ${esc(r.book)}`).join('　')}</p>`;
   h += `<div class="today-books">${SUBJ.map(sj => { const l = bs.filter(r=>r.subject===sj); return l.length ? `<div class="tb s-${sj}"><div class="tb-h"><span class="dot"></span>${sj}</div>${l.map(r=>`<div class="tb-b">${esc(r.book)}<small>〜${fmt(r.end)}</small></div>`).join('')}</div>` : ''; }).join('') || '<p class="sub">この日に進める本はありません。</p>'}</div>`;
+  h += menuHTML(s);
   return h;
 }
 
@@ -803,6 +821,7 @@ function dayDetailHTML(s){
   $('#todayTitle').textContent = `今日 ${fmt(todayIso)}`;
   $('#todaySub').textContent = c ? `${c.kind}${c.holiday?'（祝日）':''}・机の予定 ${hh(c.plan)}時間` : '';
   const bs = booksOn(todayIso);
+  $('#todayMenu').innerHTML = menuHTML(todayIso);
   $('#todayBooks').innerHTML = SUBJ.map(sj => { const l = bs.filter(r=>r.subject===sj); return l.length ? `<div class="tb s-${sj}"><div class="tb-h"><span class="dot"></span>${sj}</div>${l.map(r=>`<div class="tb-b">${esc(r.book)}<small>〜${fmt(r.end)}</small></div>`).join('')}</div>` : ''; }).join('') || '<p class="sub">今日進める本はありません。</p>';
   let s = '';
   for (let i=0;i<7;i++){ const d = new Date(today); d.setDate(d.getDate()+i); const k = iso(d); const cc = CALM[k]; const ms = msOn(k);
@@ -939,6 +958,19 @@ function lateDays(r){ return Math.round((parse(r.end)-parse(r.baseline))/DAY); }
   const tot = {}; rec.forEach(d => Object.entries(d.bySubject).forEach(([k,v]) => tot[k]=(tot[k]||0)+v));
   const mx = Math.max(1, ...Object.values(tot));
   $('#realSubj').innerHTML = Object.keys(tot).length ? SUBJ.filter(k => tot[k]).map(k => `<div class="sb s-${k}"><span class="chip s-${k}"><span class="dot"></span>${k}</span><div class="bar"><i style="width:${tot[k]/mx*100}%"></i></div><b class="num">${H1(tot[k])}</b></div>`).join('') : '<p class="sub">教科別の記録はまだありません。</p>';
+})();
+
+/* mistakes */
+(function(){
+  const L = (D.derived && D.derived.mistakes) || [];
+  if (!L.length) return;
+  $('#mistakeCard').hidden = false;
+  const pend = L.filter(m => !/^(済|完了|卒業|◎)/.test(m.status || ''));
+  $('#mkSum').textContent = `全${L.length}問・解き直し待ち ${pend.length}問`;
+  const by = {}; L.forEach(m => { const u = m.unit || m.book || 'その他'; (by[u] ||= {n:0, p:0}); by[u].n++; if (pend.includes(m)) by[u].p++; });
+  const mx = Math.max(...Object.values(by).map(v=>v.n));
+  $('#mkUnits').innerHTML = Object.entries(by).sort((a,b)=>b[1].n-a[1].n).slice(0,8).map(([u,v]) => `<div class="sb s-数学"><span class="sub" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(u)}</span><div class="bar"><i style="width:${v.n/mx*100}%"></i></div><b class="num">${v.n}<small class="muted">（待ち${v.p}）</small></b></div>`).join('');
+  $('#mkList').innerHTML = pend.slice().sort((a,b)=>(a.next||'9').localeCompare(b.next||'9')).slice(0,8).map(m => `<div class="ms-row"><div class="ms-date"><span class="d">${m.next?fmt(m.next):'—'}</span><span class="left">解き直し</span></div><div class="ms-body"><div class="ms-title">${esc(m.book||'')} ${esc(m.problem||'')}<span class="kind">${esc(m.status||'')}</span></div>${m.cause?`<div class="ms-detail">${esc(m.cause)}</div>`:''}</div></div>`).join('');
 })();
 
 /* mocks */
