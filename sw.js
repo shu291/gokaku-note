@@ -1,5 +1,5 @@
 // 電波がなくても前回の中身で開けるようにする。中身（sealed.json）はまずネットから、だめなら手元のを使う。
-const CACHE = 'gokaku-note-2026-09-27T05:10:21.026Z';
+const CACHE = 'gokaku-note-2026-09-27T05:16:24.461Z';
 const FILES = ['./', './index.html', './sealed.json', './manifest.webmanifest', './icon.svg', './apple-touch-icon.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES).catch(() => {}))); self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))); self.clients.claim(); });
