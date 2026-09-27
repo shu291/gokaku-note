@@ -321,6 +321,37 @@ tr.hl td{background:var(--accent-soft)}
 .lv3{background:color-mix(in srgb,var(--accent) 72%,var(--surface));color:#fff}
 .lv4{background:var(--accent);color:#fff}
 .hm-sw{width:14px;height:14px;border-radius:3px}
+.hm-c{cursor:pointer;position:relative;overflow:hidden}
+.hm-c.sel{box-shadow:0 0 0 2.5px var(--ink) inset}
+.hm-s{display:flex;height:4px;border-radius:2px;overflow:hidden;background:rgba(255,255,255,.35);margin-top:3px}
+.hm-s i{display:block;height:100%}
+.dstat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.dstat div{background:var(--sunk);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.dstat .v{font-family:var(--mono);font-size:17px;white-space:nowrap;font-weight:600;font-variant-numeric:tabular-nums}
+.dstat .l{font-size:11px;color:var(--ink3);line-height:1.35}
+.dlist{display:flex;flex-direction:column;margin-top:10px}
+.dr{display:grid;grid-template-columns:48px minmax(0,1fr) 104px;gap:4px 12px;align-items:center;padding:10px 2px;border-bottom:1px solid var(--line)}
+.dr:last-child{border-bottom:0}
+.dr-d{grid-row:span 2;display:flex;flex-direction:column;align-items:center;line-height:1.15}
+.dr-d b{font-family:var(--mono);font-size:16px;font-variant-numeric:tabular-nums}
+.dr-d small{font-size:11.5px;color:var(--ink3);font-weight:700}
+.dr.sat .dr-d small{color:var(--en)}.dr.sun .dr-d small{color:var(--bad)}
+.dr-track{position:relative;height:14px;border-radius:7px;background:var(--sunk);display:flex;overflow:visible}
+.dr-track .seg{display:block;height:100%}
+.dr-track .seg:first-child{border-radius:7px 0 0 7px}.dr-track .seg:last-of-type{border-radius:0 7px 7px 0}.dr-track .seg:only-of-type{border-radius:7px}
+.dr-plan{position:absolute;top:-4px;bottom:-4px;width:0;border-left:2px dashed var(--ink2)}
+.dr-none .dr-track{background:repeating-linear-gradient(135deg,var(--sunk) 0 5px,var(--surface) 5px 9px)}
+.dr-v{text-align:right;white-space:nowrap}
+.dr-v b{font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums}
+.dr-v small{font-size:11.5px;color:var(--ink3);font-family:var(--mono)}
+.dr-sub{font-size:12px;color:var(--ink2);display:flex;gap:4px 10px;flex-wrap:wrap}
+.dr-sub span{display:inline-flex;align-items:center;gap:4px}
+.dr-sub i{width:8px;height:8px;border-radius:2px;display:inline-block}
+.dr-b{font-size:11.5px;font-weight:700;border-radius:999px;padding:1px 8px;text-align:center;justify-self:end}
+.b-ok{background:var(--ok-soft);color:var(--ok)}.b-fl{background:var(--accent-soft);color:var(--accent)}.b-warn{background:var(--warn-soft);color:var(--warn)}.b-bad{background:var(--bad-soft);color:var(--bad)}.b-none{background:var(--sunk);color:var(--ink3)}
+.dday{margin-top:10px;background:var(--sunk);border-radius:10px;padding:10px 12px;font-size:13.5px}
+.dday h3{margin:0 0 6px;font-size:14px}
+.dmore{margin-top:8px;width:100%;font:inherit;font-size:13px;font-weight:700;color:var(--accent);background:none;border:1px solid var(--line);border-radius:10px;padding:8px;cursor:pointer}
 .sb{display:grid;grid-template-columns:76px 1fr 60px;gap:10px;align-items:center}
 .sb .bar{height:10px}.sb .bar i{background:var(--c)}
 .sb b{text-align:right}
@@ -402,11 +433,13 @@ tr.hl td{background:var(--accent-soft)}
   <section class="view" id="v-real" hidden>
     <div class="warnbox" id="staleReal" hidden></div>
     <div class="card"><div class="row-head"><h2>予定と実際（勉強時間）</h2><span class="sub" id="realRange"></span></div><div class="stat" id="realStat" style="margin-top:10px"></div></div>
-    <div class="card chart"><div class="row-head"><h2>累計：予定と記録</h2><span class="legend"><span><span class="sw ln dash" style="--k:var(--ink3)"></span>予定</span><span><span class="sw ln dash" style="--k:var(--warn)"></span>最低ライン（予定の84%）</span><span><span class="sw ln" style="--k:var(--accent)"></span>記録</span></span></div><p class="sub" style="margin:4px 0 0">青い線とグレーの線の間が、予定に足りていない時間です。なぞると日ごとの数字が出ます。</p><div id="cumChart" class="ck-host"></div></div>
-    <div class="grid2">
-      <div class="card chart"><div class="row-head"><h2>週ごと</h2><span class="legend"><span><span class="sw" style="background:var(--sunk);border:1.5px dashed var(--ink3)"></span>予定</span><span><span class="sw" style="background:var(--accent)"></span>記録</span><span><span class="sw" style="background:var(--ok)"></span>最低ライン以上</span></span></div><div id="weekChart" class="ck-host"></div></div>
-      <div class="card"><div class="row-head"><h2>毎日の記録</h2><span class="legend"><span><span class="sw hm-sw lvnone"></span>記録なし</span><span><span class="sw hm-sw lv1"></span>〜半分</span><span><span class="sw hm-sw lv2"></span>半分〜</span><span><span class="sw hm-sw lv3"></span>最低ライン〜</span><span><span class="sw hm-sw lv4"></span>予定どおり</span></span></div><div class="heat" id="heat"></div></div>
+    <div class="card" id="dayCard"><div class="row-head"><h2>毎日の記録</h2><div class="filters" id="dayMode"><button data-m="list">一覧</button><button data-m="cal">カレンダー</button></div></div>
+      <div class="dstat" id="dayStat"></div>
+      <div id="dayListWrap"><p class="sub" style="margin:10px 0 0">棒の長さが勉強した時間、点線がその日の予定です。新しい日が上。</p><div class="dlist" id="dayList"></div><button class="dmore" id="dayMore" hidden>前の日も見る</button></div>
+      <div id="dayCalWrap" hidden><div class="legend" style="margin-top:10px"><span><span class="sw hm-sw lvnone"></span>記録なし</span><span><span class="sw hm-sw lv1"></span>〜半分</span><span><span class="sw hm-sw lv2"></span>半分〜</span><span><span class="sw hm-sw lv3"></span>最低ライン〜</span><span><span class="sw hm-sw lv4"></span>予定どおり</span></div><div class="heat" id="heat"></div><div class="dday" id="dayDetail"></div></div>
     </div>
+    <div class="card chart"><div class="row-head"><h2>累計：予定と記録</h2><span class="legend"><span><span class="sw ln dash" style="--k:var(--ink3)"></span>予定</span><span><span class="sw ln dash" style="--k:var(--warn)"></span>最低ライン（予定の84%）</span><span><span class="sw ln" style="--k:var(--accent)"></span>記録</span></span></div><p class="sub" style="margin:4px 0 0">青い線とグレーの線の間が、予定に足りていない時間です。なぞると日ごとの数字が出ます。</p><div id="cumChart" class="ck-host"></div></div>
+    <div class="card chart"><div class="row-head"><h2>週ごと</h2><span class="legend"><span><span class="sw" style="background:var(--sunk);border:1.5px dashed var(--ink3)"></span>予定</span><span><span class="sw" style="background:var(--accent)"></span>記録</span><span><span class="sw" style="background:var(--ok)"></span>最低ライン以上</span></span></div><div id="weekChart" class="ck-host"></div></div>
     <div class="card"><h2>教科別の記録</h2><div id="realSubj" style="margin-top:10px;display:flex;flex-direction:column;gap:8px"></div></div>
     <div class="card" id="mistakeCard" hidden><div class="row-head"><h2>数学 間違いノート</h2><span class="sub" id="mkSum"></span></div><div id="mkUnits" style="display:flex;flex-direction:column;gap:8px;margin-top:10px"></div><div class="ms" id="mkList" style="margin-top:10px"></div></div>
     <div class="card chart"><div class="row-head"><h2>模試の偏差値</h2><span class="legend"><span><span class="sw ln" style="--k:var(--en)"></span>英語</span><span><span class="sw ln" style="--k:var(--ma)"></span>数学</span><span><span class="sw" style="background:var(--accent-soft)"></span>早慶ボーダー</span></span></div><div id="mockChart" class="ck-host"></div><div class="ms" id="mockList" style="margin-top:6px"></div></div>
@@ -942,22 +975,62 @@ function lateDays(r){ return Math.round((parse(r.end)-parse(r.baseline))/DAY); }
     series: [{label:'予定', ghost:true, values: wks.map(k => wk[k].plan/60)}, {label:'記録', color:'var(--accent)', values: wks.map(k => wk[k].act/60), colorAt: i => wk[wks[i]].act >= wk[wks[i]].plan*(X.floorShare||0.84) ? 'var(--ok)' : 'var(--accent)'}],
     yFmt: v => Math.round(v) + 'h', tipTitle: i => `${fmt(wks[i])}の週`, tipExtra: i => [{label:'記録がある日', color:'transparent', value: `${wk[wks[i]].rec}/${wk[wks[i]].n}日`}],
     valueLabel: i => { const w = wk[wks[i]]; return w.plan ? Math.round(w.act/w.plan*100) + '%' : ''; }});
-  // 3. 毎日の記録（色の表）
-  const days = all.filter(d => d.date < bd || d.date === bd);
+  // 3. 毎日の記録（一覧とカレンダー）
+  const days = all.filter(d => d.date <= bd);
+  const SC = {英語:'en', 数学:'ma', 物理:'ph', 化学:'ch'};
+  const scol = k => `var(--${SC[k]||'ink3'})`;
+  const sOrder = o => Object.entries(o).sort((a,b) => (SUBJ.indexOf(a[0])+9)%9 - (SUBJ.indexOf(b[0])+9)%9);
+  const judge = d => { if (d.actual == null) return ['b-none', d.date === bd ? 'これから' : '記録なし', 'none'];
+    const r = d.plan ? d.actual/d.plan : 1; const fl = X.floorShare || 0.84;
+    return r >= 1 ? ['b-ok','予定どおり',4] : r >= fl ? ['b-fl','最低ライン',3] : r >= .5 ? ['b-warn',Math.round(r*100)+'%',2] : r > 0 ? ['b-bad',Math.round(r*100)+'%',1] : ['b-bad','0分',0]; };
+  const subLine = d => sOrder(d.bySubject).map(([k,v]) => `<span><i style="background:${scol(k)}"></i>${esc(k[0])} ${v}分</span>`).join('');
   if (days.length) {
+    // まとめ
+    let streak = 0; for (let i = days.length-1; i >= 0; i--) { const d = days[i]; if (d.actual != null && d.actual > 0) streak++; else if (d.date === bd) continue; else break; }
+    const last7 = days.filter(d => d.date < bd).slice(-7), r7 = last7.filter(d => d.actual != null);
+    const a7 = r7.reduce((a,d)=>a+d.actual,0), p7 = last7.reduce((a,d)=>a+d.plan,0);
+    $('#dayStat').innerHTML = `<div><span class="v">${streak}日</span><span class="l">続けて<br>記録した日</span></div>
+      <div><span class="v">${H1(a7)}</span><span class="l">この7日<br>予定は${H1(p7)}</span></div>
+      <div><span class="v">${r7.length ? H1(a7/r7.length) : '—'}</span><span class="l">1日の平均<br>（記録した日）</span></div>`;
+    // 一覧
+    const rows = days.slice().reverse();
+    const mxv = Math.max(60, ...rows.map(d => Math.max(d.plan, d.actual || 0)));
+    let shown = 14;
+    const drawList = () => {
+      $('#dayList').innerHTML = rows.slice(0, shown).map(d => { const [bc, bt] = judge(d); const t = parse(d.date); const wd = t.getDay();
+        const segs = d.actual == null ? '' : sOrder(d.bySubject).map(([k,v]) => `<span class="seg" style="width:${v/mxv*100}%;background:${scol(k)}"></span>`).join('');
+        return `<div class="dr${d.actual==null?' dr-none':''}${wd===6?' sat':wd===0?' sun':''}"><span class="dr-d"><b>${t.getMonth()+1}/${t.getDate()}</b><small>${d.date===bd?'今日':WD[wd]}</small></span>
+          <span class="dr-track" role="img" aria-label="${fmt(d.date)} 記録 ${d.actual==null?'なし':H1(d.actual)}、予定 ${H1(d.plan)}">${segs}${d.plan?`<i class="dr-plan" style="left:${d.plan/mxv*100}%"></i>`:''}</span>
+          <span class="dr-v"><b>${d.actual==null?'—':H1(d.actual)}</b><small> / ${H1(d.plan)}</small></span>
+          <span class="dr-sub">${d.actual==null?`<span class="muted">${d.date===bd?'夜の記録を待っています':'報告がなかった日'}</span>`:subLine(d)}</span>
+          <span class="dr-b ${bc}">${d.date===bd && d.actual!=null ? '途中' : bt}</span></div>`; }).join('');
+      $('#dayMore').hidden = shown >= rows.length;
+    };
+    drawList();
+    $('#dayMore').addEventListener('click', () => { shown += 14; drawList(); });
+    // カレンダー
     const first = parse(days[0].date); const off = (first.getDay()+6)%7;
     let h = ['月','火','水','木','金','土','日'].map(w => `<div class="hm-wd">${w}</div>`).join('');
     for (let i=0;i<off;i++) h += '<div></div>';
-    days.forEach(d => { const r = d.actual == null ? null : d.plan ? d.actual/d.plan : 1; const lv = r == null ? 'none' : r >= 1 ? 4 : r >= .84 ? 3 : r >= .5 ? 2 : r > 0 ? 1 : 0;
-      const dd = parse(d.date);
-      h += `<button class="hm-c lv${lv}${d.date===bd?' today':''}" data-d="${d.date}" aria-label="${fmt(d.date)} ${d.actual==null?'記録なし':H1(d.actual)} / 予定 ${H1(d.plan)}"><span class="hm-n">${dd.getDate()===1||d===days[0]?(dd.getMonth()+1)+'/':''}${dd.getDate()}</span><span class="hm-v">${d.actual==null?'—':H1(d.actual)}</span></button>`; });
+    days.forEach(d => { const lv = judge(d)[2]; const dd = parse(d.date); const tot = d.actual || 0;
+      const strip = tot ? `<span class="hm-s">${sOrder(d.bySubject).map(([k,v]) => `<i style="width:${v/tot*100}%;background:${scol(k)}"></i>`).join('')}</span>` : '';
+      h += `<button class="hm-c lv${lv}${d.date===bd?' today':''}" data-d="${d.date}" aria-label="${fmt(d.date)} ${d.actual==null?'記録なし':H1(d.actual)} / 予定 ${H1(d.plan)}"><span class="hm-n">${dd.getDate()===1||d===days[0]?(dd.getMonth()+1)+'/':''}${dd.getDate()}</span><span class="hm-v">${d.actual==null?'—':H1(d.actual)}</span>${strip}</button>`; });
     $('#heat').innerHTML = h;
-    const tipFor = (b, cx, cy) => { const d = days.find(x => x.date === b.dataset.d); CK.showTip(fmt(d.date), [{label:'記録', color:'var(--accent)', box:true, value: d.actual==null?'記録なし':H1(d.actual)}, {label:'予定', color:'var(--ink3)', dash:true, value: H1(d.plan)}].concat(Object.entries(d.bySubject).map(([k,v]) => ({label:k, color:`var(--${({英語:'en',数学:'ma',物理:'ph',化学:'ch'})[k]||'ink3'})`, box:true, value: v+'分'}))), cx, cy); };
-    $('#heat').addEventListener('pointerover', e => { const b = e.target.closest('.hm-c'); if (b) tipFor(b, e.clientX, e.clientY); });
-    $('#heat').addEventListener('pointerleave', CK.hideTip);
-    $('#heat').addEventListener('focusin', e => { const b = e.target.closest('.hm-c'); if (b) { const r = b.getBoundingClientRect(); tipFor(b, r.right, r.top); } });
-    $('#heat').addEventListener('focusout', CK.hideTip);
-  }
+    let sel = [...days].reverse().find(d => d.actual != null)?.date || days[days.length-1].date;
+    const drawDetail = () => { const d = days.find(x => x.date === sel); const [bc, bt] = judge(d);
+      [...$('#heat').querySelectorAll('.hm-c')].forEach(b => b.classList.toggle('sel', b.dataset.d === sel));
+      $('#dayDetail').innerHTML = `<h3>${fmt(d.date)}　<span class="dr-b ${bc}">${bt}</span></h3>
+        <div class="num">記録 <b>${d.actual==null?'なし':H1(d.actual)}</b>　予定 ${H1(d.plan)}</div>
+        ${d.actual==null?'':`<div class="dr-sub" style="margin-top:6px">${subLine(d)}</div>`}`; };
+    drawDetail();
+    $('#heat').addEventListener('click', e => { const b = e.target.closest('.hm-c'); if (b) { sel = b.dataset.d; drawDetail(); }});
+    // 切りかえ
+    let dm = store.get('dayMode', 'list');
+    const applyDm = () => { $('#dayListWrap').hidden = dm !== 'list'; $('#dayCalWrap').hidden = dm !== 'cal';
+      [...$('#dayMode').children].forEach(b => b.setAttribute('aria-pressed', b.dataset.m === dm)); };
+    applyDm();
+    $('#dayMode').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { dm = b.dataset.m; store.set('dayMode', dm); applyDm(); }});
+  } else $('#dayList').innerHTML = '<p class="sub">まだ記録がありません。</p>';
   // 教科別
   const tot = {}; rec.forEach(d => Object.entries(d.bySubject).forEach(([k,v]) => tot[k]=(tot[k]||0)+v));
   const mx = Math.max(1, ...Object.values(tot));
